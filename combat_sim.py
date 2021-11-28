@@ -1,16 +1,25 @@
 # the core rules for the game Warhammer 40,000 can be found at https://wahapedia.ru/wh40k9ed/the-rules/core-rules/
 import random
+from unit import Unit
 
+plague_marines = Unit("Plague Marines", ["Plague Marine Champion", "Plague Marine", "Plague Marine", "Plague Marine",
+                                         "Plague Marine Gunner"])
+intercessors = Unit("Intercessors",
+                    ["Intercessor Sergeant", "Intercessor", "Intercessor", "Intercessor", "Intercessor"])
 
+for i in plague_marines.models:
+    print(i)
 def d6():
-    return (random.choice([1, 2, 3, 4, 5, 6]))
+    return random.randint(1, 6)
 
 
 def d3():
-    num = (random.choice([1, 2, 3]))
+    num = random.randint(1, 3)
     return num
 
 
+deaths_list = []
+wound_list = []
 datasheets = {
     "Plague Marine": {"M": 5, "WS": 3, "BS": 3, "S": 4, "T": 5, "W": 2, "A": 2, "Ld": 7, "Sv": 3, "Size": 4,
                       "Faction": "Deathguard", "Sergeant": True, "Sergeant Wargear": True,
@@ -33,7 +42,7 @@ datasheets = {
                                         "Damage": 1, "sWeapon": True, "Unwieldy": False},
                         "Power Fist": {"Type": "Melee", "Attacks": "User", "Range": "Melee", "Strength": "2*", "AP": 3,
                                        "Damage": 2, "sWeapon": True, "Unwieldy": True}}},
-    "Guardsmen": {"M": 6, "WS": 4, "BS": 4, "S": 3, "T": 3, "W": 1, "A": 1, "Ld": 6, "Sv": 4, "Size": 4,
+    "Guardsmen": {"M": 6, "WS": 4, "BS": 4, "S": 3, "T": 3, "W": 1, "A": 1, "Ld": 6, "Sv": 5, "Size": 4,
                   "Faction": "Astra Militarum", "Sergeant": True, "Sergeant Wargear": True,
                   "Weapons": {
                       "Lasgun": {"Type": "Rapid Fire", "Attacks": 1, "Range": 18, "Strength": 3, "AP": 0,
@@ -164,7 +173,7 @@ def getHits(unit, weapon, sWeapon):
     hitMods = 0
     hitsDict = {weapon: {"Num Hits": 0}, sWeapon: {"Num Hits": 0}}
     if datasheets[unit]["Weapons"][weapon]["Type"] == "Rapid Fire":
-        rapidFireValid = input("Is the gun rapid firing (y/n): ")
+        rapidFireValid = "y"  # input("Is the gun rapid firing (y/n): ")
         movedValid = "n"
     elif datasheets[unit]["Weapons"][weapon]["Type"] == "Heavy":
         movedValid = input("Did you move (y/n): ")
@@ -188,6 +197,7 @@ def getHits(unit, weapon, sWeapon):
 
 
 def getWounds(woundWeapon, numHits):
+    global modifier, s
     plague = False
     if datasheets[attacker]["Faction"] == "Deathguard":
         if datasheets[attacker]["Weapons"][woundWeapon]["Plague"]:
@@ -238,9 +248,7 @@ def getWounds(woundWeapon, numHits):
 
 def getSaves(saveWeapon, numWounds):
     saveCheck = datasheets[defender]["Sv"] + datasheets[attacker]["Weapons"][saveWeapon]["AP"]
-    if coverType == "l":
-        saveCheck -= 1
-    if coverType == "h":
+    if coverType == "l" or coverType == "h":
         saveCheck -= 1
     fSaves = 0
     rollList = []
@@ -252,6 +260,7 @@ def getSaves(saveWeapon, numWounds):
         if saveRoll < saveCheck:
             fSaves += 1
     # print(rollList)
+    # print("Amount failed: ",fSaves)
     return fSaves
 
 
@@ -272,7 +281,7 @@ def kills(tempWeapon, fSaves):
             weaponDamage = d6() + 2
         else:
             weaponDamage = d6()
-    print(weaponDamage)
+    # print(weaponDamage)
     if datasheets[defender]["Faction"] == "Deathguard":
         if weaponDamage - 1 > 0:
             weaponDamage -= 1
@@ -283,8 +292,8 @@ def kills(tempWeapon, fSaves):
             kills += 1
             damage = 0
         # print(kills, damage)
-        if kills == datasheets[defender]["Size"]:
-            break
+        # if kills == datasheets[defender]["Size"]:
+        #     break
     tempKillsList = [kills, damage]
     # print(f"{kills} dead {defender}, {damage} wounds remaining")
     return tempKillsList
@@ -292,9 +301,9 @@ def kills(tempWeapon, fSaves):
 
 def getAttacker():
     print("Choose a unit to attack with. Options: ")
-    for i in datasheets:
-        print(f"   {i}")
-    attacker = input("Attacking unit: ")
+    # for i in datasheets:
+    #     print(f"   {i}")
+    attacker = "Intercessor"  # input("Attacking unit: ")
     attackerValid = False
     for i in datasheets:
         if attacker == i:
@@ -314,7 +323,7 @@ def getWeapon(attacker):
     for i in datasheets[attacker]["Weapons"]:
         if not datasheets[attacker]["Weapons"][i]["sWeapon"]:
             print(f"   {i}")
-    weapon = input("Attacking weapon: ")
+    weapon = "Bolt Rifle"  # input("Attacking weapon: ")
     weaponValid = False
     for i in datasheets[attacker]["Weapons"]:
         if weapon == i:
@@ -360,9 +369,9 @@ if datasheets[attacker]["Sergeant Wargear"]:
 
 def getDefender():
     print("Choose a unit to attack against. Options: ")
-    for i in datasheets:
-        print(f"   {i}")
-    defender = input("Attacking at: ")
+    # for i in datasheets:
+    #     print(f"   {i}")
+    defender = "Guardsmen"  # input("Attacking at: ")
     defenderValid = False
     for i in datasheets:
         if defender == i:
@@ -379,7 +388,7 @@ defender = defenderList[0]
 
 def getCover():
     coverOptions = ["none", "light", "heavy"]
-    coverType = input("Is there any cover (none, light, or heavy): ")
+    coverType = "none"  # input("Is there any cover (none, light, or heavy): ")
     coverValid = False
     for i in coverOptions:
         if coverType == i:
@@ -396,31 +405,52 @@ else:
         coverList = getCover()
     coverType = coverList[0]
 
-woundDict = {weapon: {"Num Wounds": 0}, sWeapon: {"Num Wounds": 0}}
-saveDict = {weapon: {"Num fSaves": 0}, sWeapon: {"Num fSaves": 0}}
-hitsDict = getHits(attacker, weapon, sWeapon)
-for i in hitsDict:
-    woundDict[i]["Num Wounds"] += getWounds(i, hitsDict[i]["Num Hits"])
-for i in woundDict:
-    saveDict[i]["Num fSaves"] += getSaves(i, woundDict[i]["Num Wounds"])
-killsList = []
-for i in saveDict:
-    killsList += kills(i, saveDict[i]["Num fSaves"])
-deaths = killsList[0]
-wounds = killsList[1]
-if sWeaponValid == "y":
-    deaths += killsList[2]
-    wounds += killsList[3]
-if wounds >= datasheets[defender]["W"]:
-    deaths += 1
-    wounds = 0
-if deaths == 1:
-    if wounds == 0:
-        print(f"You killed {deaths} {defender}.")
-    else:
-        print(f"You killed {deaths} {defender}. One {defender} has taken another {wounds} wounds.")
-else:
-    if wounds == 0:
-        print(f"You killed {deaths} {defender}s.")
-    else:
-        print(f"You killed {deaths} {defender}s. One {defender} has taken another {wounds} wounds.")
+
+def run_sim(attacker, weapon, sWeapon, defender, coverType):
+    woundDict = {weapon: {"Num Wounds": 0}, sWeapon: {"Num Wounds": 0}}
+    saveDict = {weapon: {"Num fSaves": 0}, sWeapon: {"Num fSaves": 0}}
+    hitsDict = getHits(attacker, weapon, sWeapon)
+    for i in hitsDict:
+        woundDict[i]["Num Wounds"] += getWounds(i, hitsDict[i]["Num Hits"])
+    for i in woundDict:
+        saveDict[i]["Num fSaves"] += getSaves(i, woundDict[i]["Num Wounds"])
+    killsList = []
+    for i in saveDict:
+        killsList += kills(i, saveDict[i]["Num fSaves"])
+    deaths = killsList[0]
+    wounds = killsList[1]
+    if sWeaponValid == "y":
+        deaths += killsList[2]
+        wounds += killsList[3]
+    if wounds >= datasheets[defender]["W"]:
+        deaths += 1
+        wounds = 0
+    # if deaths == 1:
+    #     if wounds == 0:
+    #         print(f"You killed {deaths} {defender}.\n")
+    #     else:
+    #         print(f"You killed {deaths} {defender}. One {defender} has taken another {wounds} wounds.\n")
+    # else:
+    #     if wounds == 0:
+    #         print(f"You killed {deaths} {defender}s.\n")
+    #     else:
+    #         print(f"You killed {deaths} {defender}s. One {defender} has taken another {wounds} wounds.\n")
+    deaths_list.append(deaths)
+    wound_list.append(wounds)
+
+
+num_of_trials = 10000
+for i in range(num_of_trials):
+    run_sim(attacker, weapon, sWeapon, defender, coverType)
+print(f"Average number of deaths: {sum(deaths_list) / len(deaths_list)} ")
+deaths_list = []
+defender = "Intercessor"
+for i in range(num_of_trials):
+    run_sim(attacker, weapon, sWeapon, defender, coverType)
+print(f"Average number of deaths: {sum(deaths_list) / len(deaths_list)} ")
+deaths_list = []
+defender = "Plague Marine"
+for i in range(num_of_trials):
+    run_sim(attacker, weapon, sWeapon, defender, coverType)
+print(f"Average number of deaths: {sum(deaths_list) / len(deaths_list)} ")
+deaths_list = []
