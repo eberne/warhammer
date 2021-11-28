@@ -3,12 +3,15 @@ from fractions import Fraction as frac
 
 num_rounds = 100000  # one million
 
+
 def report():
     print(f'Monte Carlo result = {(total_score / 10) / num_rounds:14.2%}')
     print(f'Analytic result = {str(analytic):>7} or {(analytic.numerator / analytic.denominator):.2%}')
 
+
 def roll():
     return randrange(1, 7)
+
 
 print("Base Case")
 total_score = 0
