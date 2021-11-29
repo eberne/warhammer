@@ -1,14 +1,34 @@
 # the core rules for the game Warhammer 40,000 can be found at https://wahapedia.ru/wh40k9ed/the-rules/core-rules/
 import random
 from unit import Unit
+from weapon import Weapon
+from model import Model
 
-plague_marines = Unit("Plague Marines", ["Plague Marine Champion", "Plague Marine", "Plague Marine", "Plague Marine",
-                                         "Plague Marine Gunner"])
+boltgun = Weapon("Boltgun", "Rapid Fire", 1, 4, 0, 1)
+blight_launcher = Weapon("Blight Launcher", "Assault", 2, 7, 2, 2)
+bolt_rifle = Weapon("Bolt Rifle", "Rapid Fire", 1, 4, 1, 1)
+plague_knife = Weapon("Plague Knife", "Melee", "User", "User", 1, 1)
+power_sword = Weapon("Power Sword", "Melee", "User", "+1", 1, 1)
+
+plague_marine = Model("Plague Marine", [boltgun, plague_knife], 2, 4, 5, 3, 3, 2, 3)
+plague_marine_champion = Model("Plague Marine Champion", [boltgun, plague_knife, power_sword], 2, 4, 5, 3, 3, 3, 3)
+plague_marine_gunner = Model("Plague Marine Gunner", [blight_launcher, plague_knife], 2, 4, 5, 3, 3, 2, 3)
+plague_marines = Unit("Plague Marines",
+                      [plague_marine_champion, plague_marine_gunner, plague_marine, plague_marine,
+                       plague_marine], "Deathguard")
+
+intercessor = Model("Intercessor", [bolt_rifle], 2, 4, 4, 3, 3, 2, 3)
+intercessor_sergeant = Model("Intercessor Sergeant", [bolt_rifle, power_sword], 2, 4, 4, 3, 3, 3, 3)
 intercessors = Unit("Intercessors",
-                    ["Intercessor Sergeant", "Intercessor", "Intercessor", "Intercessor", "Intercessor"])
+                    [intercessor_sergeant, intercessor, intercessor, intercessor, intercessor], "Imperium")
 
 for i in plague_marines.models:
-    print(i)
+    print(f"{i.name}: {i.weapons[0].name}")
+
+for i in intercessors.models:
+    print(f"{i.name}: {i.weapons[0].name}")
+
+
 def d6():
     return random.randint(1, 6)
 
@@ -300,7 +320,7 @@ def kills(tempWeapon, fSaves):
 
 
 def getAttacker():
-    print("Choose a unit to attack with. Options: ")
+    #print("Choose a unit to attack with. Options: ")
     # for i in datasheets:
     #     print(f"   {i}")
     attacker = "Intercessor"  # input("Attacking unit: ")
@@ -319,10 +339,11 @@ attacker = attackerList[0]
 
 
 def getWeapon(attacker):
-    print("Choose a weapon to attack with. Options: ")
+    # print("Choose a weapon to attack with. Options: ")
     for i in datasheets[attacker]["Weapons"]:
         if not datasheets[attacker]["Weapons"][i]["sWeapon"]:
-            print(f"   {i}")
+            # print(f"   {i}")
+            pass
     weapon = "Bolt Rifle"  # input("Attacking weapon: ")
     weaponValid = False
     for i in datasheets[attacker]["Weapons"]:
@@ -368,7 +389,7 @@ if datasheets[attacker]["Sergeant Wargear"]:
 
 
 def getDefender():
-    print("Choose a unit to attack against. Options: ")
+    # print("Choose a unit to attack against. Options: ")
     # for i in datasheets:
     #     print(f"   {i}")
     defender = "Guardsmen"  # input("Attacking at: ")
