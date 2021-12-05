@@ -3,156 +3,208 @@ import random
 from unit import Unit
 from weapon import Weapon
 from model import Model
+from faction import Faction
 
-boltgun = Weapon("Boltgun", "Rapid Fire", 1, 4, 0, 1)
+# Weapons
+# 'name', weapon_type, num_shots, strength, armor penetration, damage
+bolt_gun = Weapon("Bolt Gun", "Rapid Fire", 1, 4, 0, 1)
 blight_launcher = Weapon("Blight Launcher", "Assault", 2, 7, 2, 2)
 bolt_rifle = Weapon("Bolt Rifle", "Rapid Fire", 1, 4, 1, 1)
-plague_knife = Weapon("Plague Knife", "Melee", "User", "User", 1, 1)
+plague_knife = Weapon("Plague Knife", "Melee", None, "User", 1, 1)
+plague_knife.attacks = "User"
+plague_knife.plague = True
 power_sword = Weapon("Power Sword", "Melee", "User", "+1", 1, 1)
+# print(plague_knife.__dict__)
 
-plague_marine = Model("Plague Marine", [boltgun, plague_knife], 2, 4, 5, 3, 3, 2, 3)
-plague_marine_champion = Model("Plague Marine Champion", [boltgun, plague_knife, power_sword], 2, 4, 5, 3, 3, 3, 3)
+# Models
+# 'name', [weapons], wounds, strength, toughness, ballistic skill, weapon skill, attacks, save
+plague_marine = Model("Plague Marine", [bolt_gun, plague_knife], 2, 4, 5, 3, 3, 2, 3)
+plague_marine_champion = Model("Plague Marine Champion", [bolt_gun, plague_knife, power_sword], 2, 4, 5, 3, 3, 3, 3)
 plague_marine_gunner = Model("Plague Marine Gunner", [blight_launcher, plague_knife], 2, 4, 5, 3, 3, 2, 3)
-plague_marines = Unit("Plague Marines",
-                      [plague_marine_champion, plague_marine_gunner, plague_marine, plague_marine,
-                       plague_marine], "Deathguard")
-
 intercessor = Model("Intercessor", [bolt_rifle], 2, 4, 4, 3, 3, 2, 3)
 intercessor_sergeant = Model("Intercessor Sergeant", [bolt_rifle, power_sword], 2, 4, 4, 3, 3, 3, 3)
+
+# Factions
+# 'name', sargent, sargent_war_gear (sargent and sargent_war_gear are boolean)
+death_guard = Faction("Death Guard", True, True)
+astra_militarum = Faction("Astra Militarum", True, True)
+
+# Units
+# 'name', [models], Faction
+plague_marines = Unit("Plague Marine",
+                      [plague_marine_champion, plague_marine_gunner, plague_marine, plague_marine,
+                       plague_marine], death_guard)
 intercessors = Unit("Intercessors",
                     [intercessor_sergeant, intercessor, intercessor, intercessor, intercessor], "Imperium")
-
-for i in plague_marines.models:
-    print(f"{i.name}: {i.weapons[0].name}")
-
-for i in intercessors.models:
-    print(f"{i.name}: {i.weapons[0].name}")
-
+guardsmen = Unit("Guardsmen", [], astra_militarum)
 
 def d6():
     return random.randint(1, 6)
 
-
 def d3():
-    num = random.randint(1, 3)
-    return num
-
+    return random.randint(1, 3)
 
 deaths_list = []
 wound_list = []
-datasheets = {
-    "Plague Marine": {"M": 5, "WS": 3, "BS": 3, "S": 4, "T": 5, "W": 2, "A": 2, "Ld": 7, "Sv": 3, "Size": 4,
-                      "Faction": "Deathguard", "Sergeant": True, "Sergeant Wargear": True,
-                      "Weapons": {
-                          "Boltgun": {"Type": "Rapid Fire", "Attacks": 1, "Range": 30, "Strength": 4, "AP": 0,
-                                      "Damage": 1, "Plague": False, "sWeapon": False},
-                          "Plague Knife": {"Type": "Melee", "Attacks": "User", "Range": "Melee", "Strength": "User",
-                                           "AP": 1, "Damage": 1, "Plague": True, "sWeapon": False, "Unwieldy": False},
-                          "Power Fist": {"Type": "Melee", "Attacks": "User", "Range": "Melee", "Strength": "2*",
-                                         "AP": 3, "Damage": 2, "Plague": False, "sWeapon": True, "Unwieldy": True}}},
-    "Intercessor": {"M": 6, "WS": 3, "BS": 3, "S": 4, "T": 4, "W": 2, "A": 2, "Ld": 7, "Sv": 3, "Size": 4,
-                    "Faction": "Space Marines", "Sergeant": True, "Sergeant Wargear": True,
-                    "Weapons": {
-                        "Bolt Rifle": {"Type": "Rapid Fire", "Attacks": 1, "Range": 30, "Strength": 4, "AP": 1,
-                                       "Damage": 1, "sWeapon": False},
-                        "Close Combat Weapon": {"Type": "Melee", "Attacks": "User", "Range": "Melee",
-                                                "Strength": "User", "AP": 0, "Damage": 1, "sWeapon": False,
-                                                "Unwieldy": False},
-                        "Power Sword": {"Type": "Melee", "Attacks": "User", "Range": "Melee", "Strength": "1+", "AP": 3,
-                                        "Damage": 1, "sWeapon": True, "Unwieldy": False},
-                        "Power Fist": {"Type": "Melee", "Attacks": "User", "Range": "Melee", "Strength": "2*", "AP": 3,
-                                       "Damage": 2, "sWeapon": True, "Unwieldy": True}}},
-    "Guardsmen": {"M": 6, "WS": 4, "BS": 4, "S": 3, "T": 3, "W": 1, "A": 1, "Ld": 6, "Sv": 5, "Size": 4,
-                  "Faction": "Astra Militarum", "Sergeant": True, "Sergeant Wargear": True,
-                  "Weapons": {
-                      "Lasgun": {"Type": "Rapid Fire", "Attacks": 1, "Range": 18, "Strength": 3, "AP": 0,
-                                 "Damage": 1, "sWeapon": False},
-                      "Close Combat Weapon": {"Type": "Melee", "Attacks": "User", "Range": "Melee", "Strength": "User",
-                                              "AP": 0, "Damage": 1, "sWeapon": False,
-                                              "Unwieldy": False},
-                      "Chainsword": {"Type": "Melee", "Attacks": "User", "Range": "Melee", "Strength": "User",
-                                     "AP": 1, "Damage": 1, "sWeapon": True, "Unwieldy": False},
-                      "Power Sword": {"Type": "Melee", "Attacks": "User", "Range": "Melee", "Strength": "1+",
-                                      "AP": 3, "Damage": 1, "sWeapon": True, "Unwieldy": False}}},
-    "Eradicator": {"M": 5, "WS": 3, "BS": 3, "S": 4, "T": 5, "W": 3, "A": 2, "Ld": 7, "Sv": 3, "Size": 2,
-                   "Faction": "Space Marines", "Sergeant": True, "Sergeant Wargear": False,
-                   "Weapons": {
-                       "Melta Rifle": {"Type": "Assault", "Attacks": 2, "Range": 24, "Strength": 8, "AP": 4,
-                                       "Damage": "D6"},
-                       "Close Combat Weapon": {"Type": "Melee", "Attacks": "User", "Range": "Melee", "Strength": "User",
-                                               "AP": 0, "Damage": 1, "sWeapon": False, "Unwieldy": False}
-                   }
-                   },
-    "Heavy Intercessor": {"M": 5, "WS": 3, "BS": 3, "S": 4, "T": 4, "W": 3, "A": 2, "Ld": 8, "Sv": 3, "Size": 4,
-                          "Faction": "Space Marines", "Sergeant": True, "Sergeant Wargear": False,
-                          "Weapons": {
-                              "Heavy Bolt Rifle": {"Type": "Rapid Fire", "Attacks": 1, "Range": 36, "Strength": 5,
-                                                   "AP": 1, "Damage": 1, "sWeapon": False},
-                              "Heavy Bolter": {"Type": "Heavy", "Attacks": 3, "Range": 36, "Strength": 5, "AP": 1,
-                                               "Damage": 2, "sWeapon": False},
-                              "Close Combat Weapon": {"Type": "Melee", "Attacks": "User", "Range": "Melee",
-                                                      "Strength": "User", "AP": 0, "Damage": 1, "sWeapon": False,
-                                                      "Unwieldy": False},
-                          }
-                          },
-    "Grey Knight": {"M": 6, "WS": 3, "BS": 3, "S": 4, "T": 4, "W": 1, "A": 1, "Ld": 7, "Sv": 3, "Size": 4,
-                    "Faction": "Grey Knights", "Sergeant": True, "Sergeant Wargear": False,
-                    "Weapons": {
-                        "Storm Bolter": {"Type": "Rapid Fire", "Attacks": 2, "Range": 24, "Strength": 4, "AP": 0,
-                                         "Damage": 1, "sWeapon": False},
-                        "Nemesis Force Sword": {"Type": "Melee", "Attacks": "User", "Range": "Melee",
-                                                "Strength": "User", "AP": 3, "Damage": "D3", "sWeapon": False,
-                                                "Unwieldy": False},
-                        "Nemesis Force Halberd": {"Type": "Melee", "Attacks": "User", "Range": "Melee",
-                                                  "Strength": "1+", "AP": 2, "Damage": "D3", "sWeapon": False,
-                                                  "Unwieldy": False}}},
-    "Retributor": {"M": 6, "WS": 4, "BS": 3, "S": 3, "T": 3, "W": 1, "A": 1, "Ld": 6, "Sv": 3, "Size": 4,
-                   "Faction": "Adepta Sororitas", "Sergeant": True, "Sergeant Wargear": True,
-                   "Weapons": {
-                       "Multi Melta": {"Type": "Heavy", "Attacks": 2, "Range": 24, "Strength": 8, "AP": 4,
-                                       "Damage": "D6", "sWeapon": False},
-                       "Heavy Flamer": {"Type": "Heavy", "Attacks": "D6", "Range": 12, "Strength": 5, "AP": 1,
-                                        "Damage": 1, "sWeapon": False},
-                       "Power Sword": {"Type": "Melee", "Attacks": "User", "Range": "Melee", "Strength": "1+",
-                                       "AP": 3, "Damage": 1, "sWeapon": True, "Unwieldy": False},
-                   }},
 
-    "Skitarii Vanguard": {"M": 6, "WS": 4, "BS": 3, "S": 3, "T": 3, "W": 1, "A": 1, "Ld": 6, "Sv": 4, "Size": 4,
-                          "Faction": "Adeptus Mechanicus", "Sergeant": True, "Sergeant Wargear": True,
-                          "Weapons": {
-                              "Radium Carbine": {"Type": "Assault", "Attacks": 3, "Range": 18, "Strength": 3, "AP": 0,
-                                                 "Damage": 1, "sWeapon": False},
-                              "Close Combat Weapon": {"Type": "Melee", "Attacks": "User", "Range": "Melee",
-                                                      "Strength": "User", "AP": 0, "Damage": 1, "sWeapon": False,
-                                                      "Unwieldy": False},
-                              "Phosphor Blast Pistol": {"Type": "Pistol", "Attacks": 1, "Range": 12, "Strength": 5,
-                                                        "AP": 1, "Damage": 1, "sWeapon": True},
-                              "Arc Pistol": {"Type": "Pistol", "Attacks": 1, "Range": 12, "Strength": 6, "AP": 1,
-                                             "Damage": 1, "sWeapon": True},
-                              "Arc Maul": {"Type": "Melee", "Attacks": "User", "Range": "Melee", "Strength": "2+",
-                                           "AP": 1, "Damage": 1, "sWeapon": True, "Unwieldy": False},
-                              "Power Sword": {"Type": "Melee", "Attacks": "User", "Range": "Melee", "Strength": "1+",
-                                              "AP": 3, "Damage": 1, "sWeapon": True, "Unwieldy": False},
-                          }},
-    "Skitarii Ranger": {"M": 6, "WS": 4, "BS": 3, "S": 3, "T": 3, "W": 1, "A": 1, "Ld": 6, "Sv": 4, "Size": 4,
-                        "Faction": "Adeptus Mechanicus", "Sergeant": True, "Sergeant Wargear": True,
-                        "Weapons": {
-                            "Galvanic Rifle": {"Type": "Rapid Fire", "Attacks": 1, "Range": 30, "Strength": 4, "AP": 0,
-                                               "Damage": 1, "sWeapon": False},
-                            "Close Combat Weapon": {"Type": "Melee", "Attacks": "User", "Range": "Melee",
-                                                    "Strength": "User", "AP": 0, "Damage": 1, "sWeapon": False,
-                                                    "Unwieldy": False},
-                            "Phosphor Blast Pistol": {"Type": "Pistol", "Attacks": 1, "Range": 12, "Strength": 5,
-                                                      "AP": 1, "Damage": 1, "sWeapon": True},
-                            "Arc Pistol": {"Type": "Pistol", "Attacks": 1, "Range": 12, "Strength": 6, "AP": 1,
-                                           "Damage": 1, "sWeapon": True},
-                            "Arc Maul": {"Type": "Melee", "Attacks": "User", "Range": "Melee", "Strength": "2+",
-                                         "AP": 1, "Damage": 1, "sWeapon": True, "Unwieldy": False},
-                            "Power Sword": {"Type": "Melee", "Attacks": "User", "Range": "Melee", "Strength": "1+",
-                                            "AP": 3, "Damage": 1, "sWeapon": True, "Unwieldy": False}}}}
+# datasheets = {
+# "Plague Marine": {"M": 5, "WS": 3, "BS": 3, "S": 4, "T": 5, "W": 2, "A": 2, "Ld": 7, "Sv": 3, "Size": 4}
+#    "Faction": "death_guard", "Sergeant": True, "Sergeant war_gear": True,
+#     "Weapons": {
+#         "Bolt_gun": {"Type": "Rapid Fire", "Attacks": 1, "Range": 30, "Strength": 4, "AP": 0,
+#                     "Damage": 1, "Plague": False, "sWeapon": False},
+#         "Plague Knife": {"Type": "Melee", "Attacks": "User", "Range": "Melee", "Strength": "User",
+#                          "AP": 1, "Damage": 1, "Plague": True, "sWeapon": False, "Unwieldy": False},
+#         "Power Fist": {"Type": "Melee", "Attacks": "User", "Range": "Melee", "Strength": "2*",
+#                        "AP": 3, "Damage": 2, "Plague": False, "sWeapon": True, "Unwieldy": True}}},
+# "Intercessor": {"M": 6, "WS": 3, "BS": 3, "S": 4, "T": 4, "W": 2, "A": 2, "Ld": 7, "Sv": 3,
+#                                   "Size": 4,
+#                                   "Faction": "Space Marines", "Sergeant": True, "Sergeant Wargear": True,
+#                                   "Weapons": {
+#                                       "Bolt Rifle": {"Type": "Rapid Fire", "Attacks": 1, "Range": 30, "Strength": 4,
+#                                                      "AP": 1,
+#                                                      "Damage": 1, "sWeapon": False},
+#                                       "Close Combat Weapon": {"Type": "Melee", "Attacks": "User", "Range": "Melee",
+#                                                               "Strength": "User", "AP": 0, "Damage": 1,
+#                                                               "sWeapon": False,
+#                                                               "Unwieldy": False},
+#                                       "Power Sword": {"Type": "Melee", "Attacks": "User", "Range": "Melee",
+#                                                       "Strength": "1+", "AP": 3,
+#                                                       "Damage": 1, "sWeapon": True, "Unwieldy": False},
+#                                       "Power Fist": {"Type": "Melee", "Attacks": "User", "Range": "Melee",
+#                                                      "Strength": "2*", "AP": 3,
+#                                                      "Damage": 2, "sWeapon": True, "Unwieldy": True}}},
+#                   "Guardsmen": {"M": 6, "WS": 4, "BS": 4, "S": 3, "T": 3, "W": 1, "A": 1, "Ld": 6, "Sv": 5,
+#                                 "Size": 4,
+#                                 "Faction": "Astra Militarum", "Sergeant": True, "Sergeant Wargear": True,
+#                                 "Weapons": {
+#                                     "Lasgun": {"Type": "Rapid Fire", "Attacks": 1, "Range": 18, "Strength": 3,
+#                                                "AP": 0,
+#                                                "Damage": 1, "sWeapon": False},
+#                                     "Close Combat Weapon": {"Type": "Melee", "Attacks": "User", "Range": "Melee",
+#                                                             "Strength": "User",
+#                                                             "AP": 0, "Damage": 1, "sWeapon": False,
+#                                                             "Unwieldy": False},
+#                                     "Chainsword": {"Type": "Melee", "Attacks": "User", "Range": "Melee",
+#                                                    "Strength": "User",
+#                                                    "AP": 1, "Damage": 1, "sWeapon": True, "Unwieldy": False},
+#                                     "Power Sword": {"Type": "Melee", "Attacks": "User", "Range": "Melee",
+#                                                     "Strength": "1+",
+#                                                     "AP": 3, "Damage": 1, "sWeapon": True, "Unwieldy": False}}},
+#                   "Eradicator": {"M": 5, "WS": 3, "BS": 3, "S": 4, "T": 5, "W": 3, "A": 2, "Ld": 7, "Sv": 3,
+#                                  "Size": 2,
+#                                  "Faction": "Space Marines", "Sergeant": True, "Sergeant Wargear": False,
+#                                  "Weapons": {
+#                                      "Melta Rifle": {"Type": "Assault", "Attacks": 2, "Range": 24, "Strength": 8,
+#                                                      "AP": 4,
+#                                                      "Damage": "D6"},
+#                                      "Close Combat Weapon": {"Type": "Melee", "Attacks": "User", "Range": "Melee",
+#                                                              "Strength": "User",
+#                                                              "AP": 0, "Damage": 1, "sWeapon": False,
+#                                                              "Unwieldy": False}
+#                                  }
+#                                  },
+#                   "Heavy Intercessor": {"M": 5, "WS": 3, "BS": 3, "S": 4, "T": 4, "W": 3, "A": 2, "Ld": 8, "Sv": 3,
+#                                         "Size": 4,
+#                                         "Faction": "Space Marines", "Sergeant": True, "Sergeant Wargear": False,
+#                                         "Weapons": {
+#                                             "Heavy Bolt Rifle": {"Type": "Rapid Fire", "Attacks": 1, "Range": 36,
+#                                                                  "Strength": 5,
+#                                                                  "AP": 1, "Damage": 1, "sWeapon": False},
+#                                             "Heavy Bolter": {"Type": "Heavy", "Attacks": 3, "Range": 36,
+#                                                              "Strength": 5, "AP": 1,
+#                                                              "Damage": 2, "sWeapon": False},
+#                                             "Close Combat Weapon": {"Type": "Melee", "Attacks": "User",
+#                                                                     "Range": "Melee",
+#                                                                     "Strength": "User", "AP": 0, "Damage": 1,
+#                                                                     "sWeapon": False,
+#                                                                     "Unwieldy": False},
+#                                         }
+#                                         },
+#                   "Grey Knight": {"M": 6, "WS": 3, "BS": 3, "S": 4, "T": 4, "W": 1, "A": 1, "Ld": 7, "Sv": 3,
+#                                   "Size": 4,
+#                                   "Faction": "Grey Knights", "Sergeant": True, "Sergeant Wargear": False,
+#                                   "Weapons": {
+#                                       "Storm Bolter": {"Type": "Rapid Fire", "Attacks": 2, "Range": 24,
+#                                                        "Strength": 4, "AP": 0,
+#                                                        "Damage": 1, "sWeapon": False},
+#                                       "Nemesis Force Sword": {"Type": "Melee", "Attacks": "User", "Range": "Melee",
+#                                                               "Strength": "User", "AP": 3, "Damage": "D3",
+#                                                               "sWeapon": False,
+#                                                               "Unwieldy": False},
+#                                       "Nemesis Force Halberd": {"Type": "Melee", "Attacks": "User",
+#                                                                 "Range": "Melee",
+#                                                                 "Strength": "1+", "AP": 2, "Damage": "D3",
+#                                                                 "sWeapon": False,
+#                                                                 "Unwieldy": False}}},
+#                   "Retributor": {"M": 6, "WS": 4, "BS": 3, "S": 3, "T": 3, "W": 1, "A": 1, "Ld": 6, "Sv": 3,
+#                                  "Size": 4,
+#                                  "Faction": "Adepta Sororitas", "Sergeant": True, "Sergeant Wargear": True,
+#                                  "Weapons": {
+#                                      "Multi Melta": {"Type": "Heavy", "Attacks": 2, "Range": 24, "Strength": 8,
+#                                                      "AP": 4,
+#                                                      "Damage": "D6", "sWeapon": False},
+#                                      "Heavy Flamer": {"Type": "Heavy", "Attacks": "D6", "Range": 12, "Strength": 5,
+#                                                       "AP": 1,
+#                                                       "Damage": 1, "sWeapon": False},
+#                                      "Power Sword": {"Type": "Melee", "Attacks": "User", "Range": "Melee",
+#                                                      "Strength": "1+",
+#                                                      "AP": 3, "Damage": 1, "sWeapon": True, "Unwieldy": False},
+#                                  }},
+#
+#                   "Skitarii Vanguard": {"M": 6, "WS": 4, "BS": 3, "S": 3, "T": 3, "W": 1, "A": 1, "Ld": 6, "Sv": 4,
+#                                         "Size": 4,
+#                                         "Faction": "Adeptus Mechanicus", "Sergeant": True, "Sergeant Wargear": True,
+#                                         "Weapons": {
+#                                             "Radium Carbine": {"Type": "Assault", "Attacks": 3, "Range": 18,
+#                                                                "Strength": 3, "AP": 0,
+#                                                                "Damage": 1, "sWeapon": False},
+#                                             "Close Combat Weapon": {"Type": "Melee", "Attacks": "User",
+#                                                                     "Range": "Melee",
+#                                                                     "Strength": "User", "AP": 0, "Damage": 1,
+#                                                                     "sWeapon": False,
+#                                                                     "Unwieldy": False},
+#                                             "Phosphor Blast Pistol": {"Type": "Pistol", "Attacks": 1, "Range": 12,
+#                                                                       "Strength": 5,
+#                                                                       "AP": 1, "Damage": 1, "sWeapon": True},
+#                                             "Arc Pistol": {"Type": "Pistol", "Attacks": 1, "Range": 12,
+#                                                            "Strength": 6, "AP": 1,
+#                                                            "Damage": 1, "sWeapon": True},
+#                                             "Arc Maul": {"Type": "Melee", "Attacks": "User", "Range": "Melee",
+#                                                          "Strength": "2+",
+#                                                          "AP": 1, "Damage": 1, "sWeapon": True, "Unwieldy": False},
+#                                             "Power Sword": {"Type": "Melee", "Attacks": "User", "Range": "Melee",
+#                                                             "Strength": "1+",
+#                                                             "AP": 3, "Damage": 1, "sWeapon": True,
+#                                                             "Unwieldy": False},
+#                                         }},
+#                   "Skitarii Ranger": {"M": 6, "WS": 4, "BS": 3, "S": 3, "T": 3, "W": 1, "A": 1, "Ld": 6, "Sv": 4,
+#                                       "Size": 4,
+#                                       "Faction": "Adeptus Mechanicus", "Sergeant": True, "Sergeant Wargear": True,
+#                                       "Weapons": {
+#                                           "Galvanic Rifle": {"Type": "Rapid Fire", "Attacks": 1, "Range": 30,
+#                                                              "Strength": 4, "AP": 0,
+#                                                              "Damage": 1, "sWeapon": False},
+#                                           "Close Combat Weapon": {"Type": "Melee", "Attacks": "User",
+#                                                                   "Range": "Melee",
+#                                                                   "Strength": "User", "AP": 0, "Damage": 1,
+#                                                                   "sWeapon": False,
+#                                                                   "Unwieldy": False},
+#                                           "Phosphor Blast Pistol": {"Type": "Pistol", "Attacks": 1, "Range": 12,
+#                                                                     "Strength": 5,
+#                                                                     "AP": 1, "Damage": 1, "sWeapon": True},
+#                                           "Arc Pistol": {"Type": "Pistol", "Attacks": 1, "Range": 12, "Strength": 6,
+#                                                          "AP": 1,
+#                                                          "Damage": 1, "sWeapon": True},
+#                                           "Arc Maul": {"Type": "Melee", "Attacks": "User", "Range": "Melee",
+#                                                        "Strength": "2+",
+#                                                        "AP": 1, "Damage": 1, "sWeapon": True, "Unwieldy": False},
+#                                           "Power Sword": {"Type": "Melee", "Attacks": "User", "Range": "Melee",
+#                                                           "Strength": "1+",
+#                                                           "AP": 3, "Damage": 1, "sWeapon": True,
+#                                                           "Unwieldy": False}}}
 
-
-def hitRoll(unit, weapon, rapidFireValid, hitMods, movedValid, Sergeant):
+def hitRoll(unit, hit_roll_weapon, rapid_fire_valid, hitMods, movedValid, Sergeant):
     tempNumHits = 0
     if datasheets[unit]["Weapons"][weapon]["Attacks"] == "User":
         numAttacks = datasheets[unit]["A"]
@@ -166,7 +218,7 @@ def hitRoll(unit, weapon, rapidFireValid, hitMods, movedValid, Sergeant):
         hitCheck = datasheets[unit]["WS"]
         if datasheets[unit]["Weapons"][weapon]["Unwieldy"]: hitCheck += 1
     elif datasheets[unit]["Weapons"][weapon]["Type"] == "Rapid Fire":
-        if rapidFireValid == "y":
+        if rapid_fire_valid == "y":
             numAttacks *= 2
         hitCheck = datasheets[unit]["BS"]
     elif movedValid == "y":
@@ -186,7 +238,6 @@ def hitRoll(unit, weapon, rapidFireValid, hitMods, movedValid, Sergeant):
         if hitroll >= hitCheck:
             tempNumHits += 1
     return tempNumHits
-
 
 def getHits(unit, weapon, sWeapon):
     numHits = 0
@@ -214,7 +265,6 @@ def getHits(unit, weapon, sWeapon):
             else:
                 hitsDict[weapon]["Num Hits"] += hitRoll(unit, weapon, rapidFireValid, hitMods, movedValid, True)
     return hitsDict
-
 
 def getWounds(woundWeapon, numHits):
     global modifier, s
@@ -265,7 +315,6 @@ def getWounds(woundWeapon, numHits):
     # print(woundWeapon, ": ", numWounds)
     return numWounds
 
-
 def getSaves(saveWeapon, numWounds):
     saveCheck = datasheets[defender]["Sv"] + datasheets[attacker]["Weapons"][saveWeapon]["AP"]
     if coverType == "l" or coverType == "h":
@@ -282,7 +331,6 @@ def getSaves(saveWeapon, numWounds):
     # print(rollList)
     # print("Amount failed: ",fSaves)
     return fSaves
-
 
 def kills(tempWeapon, fSaves):
     kills = 0
@@ -318,9 +366,8 @@ def kills(tempWeapon, fSaves):
     # print(f"{kills} dead {defender}, {damage} wounds remaining")
     return tempKillsList
 
-
 def getAttacker():
-    #print("Choose a unit to attack with. Options: ")
+    # print("Choose a unit to attack with. Options: ")
     # for i in datasheets:
     #     print(f"   {i}")
     attacker = "Intercessor"  # input("Attacking unit: ")
@@ -330,13 +377,11 @@ def getAttacker():
             attackerValid = True
     return attacker, attackerValid
 
-
 attackerList = getAttacker()
 while not attackerList[1]:
     print(f"{attackerList[0]} is not an option. Please enter complete name of option. Please try again.")
     attackerList = getAttacker()
 attacker = attackerList[0]
-
 
 def getWeapon(attacker):
     # print("Choose a weapon to attack with. Options: ")
@@ -351,13 +396,11 @@ def getWeapon(attacker):
             weaponValid = True
     return weapon, weaponValid
 
-
 weaponList = getWeapon(attacker)
 while not weaponList[1]:
     print(f"{weaponList[0]} is not an option. Please enter complete name of option. Please try again.")
     weaponList = getWeapon(attacker)
 weapon = weaponList[0]
-
 
 def getSWeapon(attacker):
     print("Choose weapon for the sergeant to attack with. Options: ")
@@ -370,7 +413,6 @@ def getSWeapon(attacker):
         if sWeapon == i:
             sWeaponValid = True
     return sWeapon, sWeaponValid
-
 
 if datasheets[attacker]["Sergeant Wargear"]:
     if datasheets[attacker]["Weapons"][weapon]["Type"] == "Melee":
@@ -387,7 +429,6 @@ if datasheets[attacker]["Sergeant Wargear"]:
         sWeapon = weapon
         sWeaponValid = "n"
 
-
 def getDefender():
     # print("Choose a unit to attack against. Options: ")
     # for i in datasheets:
@@ -399,13 +440,11 @@ def getDefender():
             defenderValid = True
     return defender, defenderValid
 
-
 defenderList = getDefender()
 while not defenderList[1]:
     print(f"{defenderList[0]} is not an option. Please enter complete name of option. Please try again.")
     defenderList = getDefender()
 defender = defenderList[0]
-
 
 def getCover():
     coverOptions = ["none", "light", "heavy"]
@@ -416,7 +455,6 @@ def getCover():
             coverValid = True
     return coverType, coverValid
 
-
 if datasheets[attacker]["Weapons"][weapon]["Type"] == "Melee":
     coverType = "n"
 else:
@@ -425,7 +463,6 @@ else:
         print(f"{coverList[0]} is not an option. Please enter complete name of option. Please try again.")
         coverList = getCover()
     coverType = coverList[0]
-
 
 def run_sim(attacker, weapon, sWeapon, defender, coverType):
     woundDict = {weapon: {"Num Wounds": 0}, sWeapon: {"Num Wounds": 0}}
@@ -458,7 +495,6 @@ def run_sim(attacker, weapon, sWeapon, defender, coverType):
     #         print(f"You killed {deaths} {defender}s. One {defender} has taken another {wounds} wounds.\n")
     deaths_list.append(deaths)
     wound_list.append(wounds)
-
 
 num_of_trials = 10000
 for i in range(num_of_trials):
