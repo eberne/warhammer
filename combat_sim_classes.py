@@ -5,11 +5,11 @@ from weapon import Weapon
 from model import Model
 
 # Weapons
-# 'name', weapon_type, attacks, strength, armor penetration, damage, plague, extra attacks
+# 'name', weapon_type, attacks, strength, armor penetration, damage, plague, extra attacks, unweildy
 bolt_gun = Weapon("Bolt Gun", "Rapid Fire", 1, 4, 0, 1)
 blight_launcher = Weapon("Blight Launcher", "Assault", 2, 7, 2, 2, True)
 bolt_rifle = Weapon("Bolt Rifle", "Rapid Fire", 1, 4, 1, 1)
-plague_knife = Weapon("Plague Knife", "Melee", None, "User", 1, 1, True)
+plague_knife = Weapon("Plague Knife", "Melee", "User", "User", 1, 1, True)
 power_sword = Weapon("Power Sword", "Melee", "User", "+1", 1, 1)
 lasgun = Weapon("Lasgun", "Rapid Fire", 1, 3, 0, 1)
 chainsword = Weapon("Chainsword", "Melee", "User", "User", 0, 1, extra_attacks=1)
@@ -44,8 +44,38 @@ def d3():
     return random.randint(1, 3)
 
 
-def get_hits(attacker, weapon, defender):
-    pass
+def get_hits(attacker, model, weapon, defender):
+    hit_mod = 0
+    hit_check = 0
+    hits = 0
+    if weapon.weapon_type == "Heavy":
+        moved = True  # input("Moved with heavy? (y/n)")
+        if moved: hit_mod += 1
+    elif weapon.weapon_type == "Assault":
+        advanced = True  # input("Advanced? (y/n)")
+        if advanced: hit_mod += 1
+    if weapon.unwieldy:
+        hit_mod += 1
+    if hit_mod > 1:
+        hit_mod = 1
+    elif hit_mod < -1:
+        hit_mod = -1
+    if weapon.weapon_type == "Melee":
+        hit_check = model.ws
+    else:
+        hit_check = model.bs
+    hit_check += hit_mod
+    if weapon.attacks == "User":
+        attacks = model.attacks + weapon.extra_attacks
+    else:
+        attacks = weapon.attacks + weapon.extra_attacks
+    if weapon.weapon_type == "Rapid Fire":
+        moved = False  # input("Did you move? (y/n)")
+        if not moved: attacks *= 2
+    for i in range(attacks):
+        if d6() >= hit_check:
+            hits += 1
+    return hits
 
 
 def get_wounds(attacker, defender, weapon, hits):
@@ -60,3 +90,10 @@ def get_damage(attacker, defender, weapon, saves):
     pass
 
 
+attacker_datasheet = intercessors
+defender_datasheet = infantry_squad
+attacker_weapon = bolt_rifle
+
+for i in attacker_datasheet.models:
+    hit_num = get_hits(attacker_datasheet, i, attacker_weapon, defender_datasheet)
+    print(hit_num)
