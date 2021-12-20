@@ -3,7 +3,6 @@ import random
 from unit import Unit
 from weapon import Weapon
 from model import Model
-from faction import Faction
 
 # Weapons
 # 'name', weapon_type, num_shots, strength, armor penetration, damage
@@ -38,14 +37,18 @@ intercessors = Unit("Intercessors",
                     [intercessor_sergeant, intercessor, intercessor, intercessor, intercessor], "Imperium")
 guardsmen = Unit("Guardsmen", [], astra_militarum)
 
+
 def d6():
     return random.randint(1, 6)
+
 
 def d3():
     return random.randint(1, 3)
 
+
 deaths_list = []
 wound_list = []
+
 
 # datasheets = {
 # "Plague Marine": {"M": 5, "WS": 3, "BS": 3, "S": 4, "T": 5, "W": 2, "A": 2, "Ld": 7, "Sv": 3, "Size": 4}
@@ -239,6 +242,7 @@ def hitRoll(unit, hit_roll_weapon, rapid_fire_valid, hitMods, movedValid, Sergea
             tempNumHits += 1
     return tempNumHits
 
+
 def getHits(unit, weapon, sWeapon):
     numHits = 0
     hitMods = 0
@@ -265,6 +269,7 @@ def getHits(unit, weapon, sWeapon):
             else:
                 hitsDict[weapon]["Num Hits"] += hitRoll(unit, weapon, rapidFireValid, hitMods, movedValid, True)
     return hitsDict
+
 
 def getWounds(woundWeapon, numHits):
     global modifier, s
@@ -315,6 +320,7 @@ def getWounds(woundWeapon, numHits):
     # print(woundWeapon, ": ", numWounds)
     return numWounds
 
+
 def getSaves(saveWeapon, numWounds):
     saveCheck = datasheets[defender]["Sv"] + datasheets[attacker]["Weapons"][saveWeapon]["AP"]
     if coverType == "l" or coverType == "h":
@@ -331,6 +337,7 @@ def getSaves(saveWeapon, numWounds):
     # print(rollList)
     # print("Amount failed: ",fSaves)
     return fSaves
+
 
 def kills(tempWeapon, fSaves):
     kills = 0
@@ -366,6 +373,7 @@ def kills(tempWeapon, fSaves):
     # print(f"{kills} dead {defender}, {damage} wounds remaining")
     return tempKillsList
 
+
 def getAttacker():
     # print("Choose a unit to attack with. Options: ")
     # for i in datasheets:
@@ -377,11 +385,13 @@ def getAttacker():
             attackerValid = True
     return attacker, attackerValid
 
+
 attackerList = getAttacker()
 while not attackerList[1]:
     print(f"{attackerList[0]} is not an option. Please enter complete name of option. Please try again.")
     attackerList = getAttacker()
 attacker = attackerList[0]
+
 
 def getWeapon(attacker):
     # print("Choose a weapon to attack with. Options: ")
@@ -396,11 +406,13 @@ def getWeapon(attacker):
             weaponValid = True
     return weapon, weaponValid
 
+
 weaponList = getWeapon(attacker)
 while not weaponList[1]:
     print(f"{weaponList[0]} is not an option. Please enter complete name of option. Please try again.")
     weaponList = getWeapon(attacker)
 weapon = weaponList[0]
+
 
 def getSWeapon(attacker):
     print("Choose weapon for the sergeant to attack with. Options: ")
@@ -413,6 +425,7 @@ def getSWeapon(attacker):
         if sWeapon == i:
             sWeaponValid = True
     return sWeapon, sWeaponValid
+
 
 if datasheets[attacker]["Sergeant Wargear"]:
     if datasheets[attacker]["Weapons"][weapon]["Type"] == "Melee":
@@ -429,6 +442,7 @@ if datasheets[attacker]["Sergeant Wargear"]:
         sWeapon = weapon
         sWeaponValid = "n"
 
+
 def getDefender():
     # print("Choose a unit to attack against. Options: ")
     # for i in datasheets:
@@ -440,11 +454,13 @@ def getDefender():
             defenderValid = True
     return defender, defenderValid
 
+
 defenderList = getDefender()
 while not defenderList[1]:
     print(f"{defenderList[0]} is not an option. Please enter complete name of option. Please try again.")
     defenderList = getDefender()
 defender = defenderList[0]
+
 
 def getCover():
     coverOptions = ["none", "light", "heavy"]
@@ -455,6 +471,7 @@ def getCover():
             coverValid = True
     return coverType, coverValid
 
+
 if datasheets[attacker]["Weapons"][weapon]["Type"] == "Melee":
     coverType = "n"
 else:
@@ -463,6 +480,7 @@ else:
         print(f"{coverList[0]} is not an option. Please enter complete name of option. Please try again.")
         coverList = getCover()
     coverType = coverList[0]
+
 
 def run_sim(attacker, weapon, sWeapon, defender, coverType):
     woundDict = {weapon: {"Num Wounds": 0}, sWeapon: {"Num Wounds": 0}}
@@ -495,6 +513,7 @@ def run_sim(attacker, weapon, sWeapon, defender, coverType):
     #         print(f"You killed {deaths} {defender}s. One {defender} has taken another {wounds} wounds.\n")
     deaths_list.append(deaths)
     wound_list.append(wounds)
+
 
 num_of_trials = 10000
 for i in range(num_of_trials):
