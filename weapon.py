@@ -1,5 +1,5 @@
 class Weapon:
-    def __init__(self, name, weapon_type, attacks, s, ap, damage, plague=False,extra_attacks=0,unwieldy=False):
+    def __init__(self, name, weapon_type, attacks, s, ap, damage, plague=False, extra_attacks=0, unwieldy=False):
         self.name = name
         self.weapon_type = weapon_type
         self.attacks = attacks
