@@ -52,7 +52,10 @@ wound_list = []
 
 # datasheets = {
 # "Plague Marine": {"M": 5, "WS": 3, "BS": 3, "S": 4, "T": 5, "W": 2, "A": 2, "Ld": 7, "Sv": 3, "Size": 4}
-#    "Faction": "death_guard", "Sergeant": True, "Sergeant war_gear": True,
+#    "Faction": "death_guard",
+#    "Sergeant": True,
+#
+#    "Sergeant war_gear": True,
 #     "Weapons": {
 #         "Bolt_gun": {"Type": "Rapid Fire", "Attacks": 1, "Range": 30, "Strength": 4, "AP": 0,
 #                     "Damage": 1, "Plague": False, "sWeapon": False},
