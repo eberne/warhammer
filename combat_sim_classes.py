@@ -29,7 +29,7 @@ lascannon = Weapon("Lascannon", "Heavy", 1, 9, 3, "d6")
 
 # Models
 # 'name', [weapons], wounds (health), strength, toughness, ballistic skill, weapon skill, attacks, save, quantity
-plague_marine = Model("Plague Marine", [bolt_gun, plague_knife], 2, 4, 5, 3, 3, 2, 3, 3)
+plague_marine = Model("Plague Marine", [bolt_gun, plague_knife], 2, 4, 5, 3, 3, 2, 3, 5)
 plague_marine_champion = Model("Plague Marine Champion", [bolt_gun, plague_knife, power_sword], 2, 4, 5, 3, 3, 3, 3)
 plague_marine_gunner = Model("Plague Marine Gunner", [blight_launcher, plague_knife], 2, 4, 5, 3, 3, 2, 3)
 intercessor = Model("Intercessor", [bolt_rifle], 2, 4, 4, 3, 3, 2, 3, 4)
@@ -40,8 +40,7 @@ guardsman_sergeant = Model("Guardsman Sergeant", [lasgun, chainsword], 1, 3, 3, 
 # Units
 # 'name', [models], Faction
 plague_marines = Unit("Plague Marine",
-                      [plague_marine_champion, plague_marine_gunner, plague_marine, plague_marine,
-                       plague_marine], "death_guard")
+                      [plague_marine_champion, plague_marine_gunner, plague_marine], "death_guard")
 intercessors = Unit("Intercessors",
                     [intercessor_sergeant, intercessor], "Imperium")
 infantry_squad = Unit("Infantry Squad", [guardsman, guardsman_sergeant], "astra_militarum")
@@ -127,12 +126,13 @@ def get_damage(defender, weapon, f_saves):
     deaths = 0
     damage = 0
     for i in range(f_saves):
-        damage += weapon.damage
+        damage += weapon.rand_damage(weapon.damage)
+        # print(damage)
         if damage >= defender.models[0].w:
             damage = 0
             deaths += 1
 
-    return deaths
+    return deaths, damage
 
 
 attacker_datasheet = intercessors
@@ -145,8 +145,14 @@ for model in attacker_datasheet.models:
         hit_num = get_hits(model, attacker_weapon)
         wound_num = get_wounds(model, defender_datasheet, attacker_weapon, hit_num)
         failed_save_num += get_saves(defender_datasheet, attacker_weapon, wound_num)
-        # print(wound_num)
-        # print(f"{defender_datasheet.name} failed {failed_save_num} saves\n")
 dead_models = get_damage(defender_datasheet, attacker_weapon, failed_save_num)
-print(dead_models)
-# print(get_wounds(plague_marine_champion, infantry_squad, plague_knife, 3))
+if dead_models[1] == 0:
+    print(f"deaths: {dead_models[0]}")
+else:
+    print(f"deaths: {dead_models[0]}\nwounds remaining: {defender_datasheet.models[0].w - dead_models[1]}")
+
+# TODO:
+#  1. add shooting w/ multiple weapons
+#  2. add reroll capabilities
+#  3. add more differing profiles
+#  4. add framework for gathering data
