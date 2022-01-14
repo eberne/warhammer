@@ -156,3 +156,4 @@ else:
 #  2. add reroll capabilities
 #  3. add more differing profiles
 #  4. add framework for gathering data
+#  5. Intercessor, Plague Marine and Guardsman have one more attribute than everyone else
