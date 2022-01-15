@@ -2,17 +2,27 @@
 import random
 from unit import Unit
 from weapon import Weapon
-from model import Model
 import statistics
+import pandas as pd
 
+models = pd.read_csv('model_data.csv')
+models.rename(index={0: 'plague_marine',
+                     1: 'plague_marine_champion',
+                     2: 'plague_marine_gunner',
+                     3: 'intercessor',
+                     4: 'intercessor_sergeant',
+                     5: 'guardsman',
+                     6: 'guardsman_sargent'},
+              inplace=True)
+models = models.T  # make models column names
+print(models.plague_marine)
+print(models.loc['Save', 'plague_marine'])
 
 def d6():
     return random.randint(1, 6)
 
-
 def d3():
     return random.randint(1, 3)
-
 
 # Weapons
 # 'name', weapon_type, attacks, strength, armor penetration, damage, plague, extra attacks, unweildy
@@ -25,26 +35,13 @@ lasgun = Weapon("Lasgun", "Rapid Fire", 1, 3, 0, 1)
 chainsword = Weapon("Chainsword", "Melee", "User", "User", 0, 1, extra_attacks=1)
 lascannon = Weapon("Lascannon", "Heavy", 1, 9, 3, "d6")
 
-# print(plague_knife.__dict__)
-
-# Models
-# 'name', [weapons], wounds (health), strength, toughness, ballistic skill, weapon skill, attacks, save, quantity
-plague_marine = Model("Plague Marine", [bolt_gun, plague_knife], 2, 4, 5, 3, 3, 2, 3, 5)
-plague_marine_champion = Model("Plague Marine Champion", [bolt_gun, plague_knife, power_sword], 2, 4, 5, 3, 3, 3, 3)
-plague_marine_gunner = Model("Plague Marine Gunner", [blight_launcher, plague_knife], 2, 4, 5, 3, 3, 2, 3)
-intercessor = Model("Intercessor", [bolt_rifle], 2, 4, 4, 3, 3, 2, 3, 4)
-intercessor_sergeant = Model("Intercessor Sergeant", [bolt_rifle, power_sword], 2, 4, 4, 3, 3, 3, 3)
-guardsman = Model("Guardsman", [lasgun], 1, 3, 3, 4, 4, 1, 5, 9)
-guardsman_sergeant = Model("Guardsman Sergeant", [lasgun, chainsword], 1, 3, 3, 4, 4, 2, 5)
-
 # Units
 # 'name', [models], Faction
-plague_marines = Unit("Plague Marine",
-                      [plague_marine_champion, plague_marine_gunner, plague_marine], "death_guard")
+plague_marines = Unit("Plague Marines",
+                      [models.plague_marine_champion, models.plague_marine_gunner, models.plague_marine], "death_guard")
 intercessors = Unit("Intercessors",
-                    [intercessor_sergeant, intercessor], "Imperium")
-infantry_squad = Unit("Infantry Squad", [guardsman, guardsman_sergeant], "astra_militarum")
-
+                    [models.intercessor_sergeant, models.intercessor], "Imperium")
+infantry_squad = Unit("Infantry Squad", [models.guardsman, models.guardsman_sargent], "astra_militarum")
 
 def get_hits(attacker, weapon):
     hit_mod = 0
@@ -78,7 +75,6 @@ def get_hits(attacker, weapon):
             hits += 1
     return hits
 
-
 def get_wounds(attacker, defender, weapon, hits):
     #    returns number of wounds
     wound_check = 0
@@ -111,7 +107,6 @@ def get_wounds(attacker, defender, weapon, hits):
             wounds += 1
     return wounds
 
-
 def get_saves(defender, weapon, wounds):
     # returns number of failed saves
     save_check = defender.models[0].sv + weapon.ap
@@ -120,7 +115,6 @@ def get_saves(defender, weapon, wounds):
         if d6() < save_check:
             failed_saves += 1
     return failed_saves
-
 
 def get_damage(defender, weapon, f_saves):
     deaths = 0
@@ -134,14 +128,13 @@ def get_damage(defender, weapon, f_saves):
 
     return deaths, damage
 
-
 attacker_datasheet = intercessors
 defender_datasheet = infantry_squad
 attacker_weapon = bolt_rifle
 failed_save_num = 0
 
 for model in attacker_datasheet.models:
-    for model_num in range(model.quantity):
+    for model_num in range(7):
         hit_num = get_hits(model, attacker_weapon)
         wound_num = get_wounds(model, defender_datasheet, attacker_weapon, hit_num)
         failed_save_num += get_saves(defender_datasheet, attacker_weapon, wound_num)
@@ -156,4 +149,4 @@ else:
 #  2. add reroll capabilities
 #  3. add more differing profiles
 #  4. add framework for gathering data
-#  5. Intercessor, Plague Marine and Guardsman have one more attribute than everyone else
+#  5. make Quantity an int
