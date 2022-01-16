@@ -1,16 +1,19 @@
 # import random
 import random
 
+
 class Unit:
     def __init__(self, name, num_people, person_list):
         self.name = name
         self.num_people = num_people
         self.person_list = person_list
 
+
 class Person:
     def __init__(self, name, weapon_list):
         self.name = name
         self.weapon_list = weapon_list
+
 
 class Weapon:
     def __init__(self, name, damage, num_shots):
