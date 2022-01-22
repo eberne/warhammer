@@ -5,6 +5,9 @@ from weapon import Weapon
 from model import Model
 import statistics
 
+rr_hits = True
+rr_wounds = True
+
 
 def d6():
     return random.randint(1, 6)
@@ -24,26 +27,34 @@ power_sword = Weapon("Power Sword", "Melee", "User", "+1", 1, 1)
 lasgun = Weapon("Lasgun", "Rapid Fire", 1, 3, 0, 1)
 chainsword = Weapon("Chainsword", "Melee", "User", "User", 0, 1, extra_attacks=1)
 lascannon = Weapon("Lascannon", "Heavy", 1, 9, 3, "d6")
+storm_bolter = Weapon("Storm Bolter", "Rapid Fire", 2, 4, 0, 1)
+heavy_bolter = Weapon("Heavy Bolter", "Heavy", 3, 5, 1, 2)
+battle_cannon = Weapon("Battle Cannon", "Heavy", "d6", 8, 2, "d3")
+ccw = Weapon("Close Combat Weapon", 'Melee', "User", "User", 0, 1)
 
 # print(plague_knife.__dict__)
 
 # Models
 # 'name', [weapons], wounds (health), strength, toughness, ballistic skill, weapon skill, attacks, save, quantity
 plague_marine = Model("Plague Marine", [bolt_gun, plague_knife], 2, 4, 5, 3, 3, 2, 3, 5)
-plague_marine_champion = Model("Plague Marine Champion", [bolt_gun, plague_knife, power_sword], 2, 4, 5, 3, 3, 3, 3)
-plague_marine_gunner = Model("Plague Marine Gunner", [blight_launcher, plague_knife], 2, 4, 5, 3, 3, 2, 3)
-intercessor = Model("Intercessor", [bolt_rifle], 2, 4, 4, 3, 3, 2, 3, 4)
-intercessor_sergeant = Model("Intercessor Sergeant", [bolt_rifle, power_sword], 2, 4, 4, 3, 3, 3, 3)
-guardsman = Model("Guardsman", [lasgun], 1, 3, 3, 4, 4, 1, 5, 9)
-guardsman_sergeant = Model("Guardsman Sergeant", [lasgun, chainsword], 1, 3, 3, 4, 4, 2, 5)
+plague_marine_champion = Model("Plague Marine Champion", [bolt_gun, power_sword], 2, 4, 5, 3, 3, 3, 3, 1)
+plague_marine_gunner = Model("Plague Marine Gunner", [blight_launcher, plague_knife], 2, 4, 5, 3, 3, 2, 3, 1)
+intercessor = Model("Intercessor", [bolt_rifle, ccw], 2, 4, 4, 3, 3, 2, 3, 4)
+intercessor_sergeant = Model("Intercessor Sergeant", [bolt_rifle, power_sword], 2, 4, 4, 3, 3, 3, 3, 1)
+guardsman = Model("Guardsman", [lasgun, ccw], 1, 3, 3, 4, 4, 1, 5, 9)
+guardsman_sergeant = Model("Guardsman Sergeant", [lasgun, chainsword], 1, 3, 3, 4, 4, 2, 5, 1)
+rhino = Model("Rhino", [storm_bolter, ccw], 10, 6, 7, 3, 6, 3, 3, 1)
+leman_russ = Model("Leman Russ", [heavy_bolter, battle_cannon, ccw], 12, 7, 8, 4, 6, 3, 2, 1)
 
 # Units
 # 'name', [models], Faction
 plague_marines = Unit("Plague Marine",
-                      [plague_marine_champion, plague_marine_gunner, plague_marine], "death_guard")
+                      [plague_marine_champion, plague_marine_gunner, plague_marine], "Death Guard")
 intercessors = Unit("Intercessors",
-                    [intercessor_sergeant, intercessor], "Imperium")
-infantry_squad = Unit("Infantry Squad", [guardsman, guardsman_sergeant], "astra_militarum")
+                    [intercessor_sergeant, intercessor], "Adeptus Astartes")
+infantry_squad = Unit("Infantry Squad", [guardsman, guardsman_sergeant], "Astra Militarum")
+rhino_unit = Unit("Rhino", [rhino], "Adeptus Astartes")
+leman_russ_battle_tanks = Unit("Leman Russ Battle Tanks", [leman_russ], "Asta Militarum")
 
 
 def get_hits(attacker, weapon):
@@ -74,7 +85,10 @@ def get_hits(attacker, weapon):
         moved = False  # input("Did you move? (y/n)")
         if not moved: attacks *= 2
     for i in range(attacks):
-        if d6() >= hit_check:
+        roll = d6()
+        if rr_hits and roll == 1:
+            roll = d6()
+        if roll >= hit_check:
             hits += 1
     return hits
 
@@ -107,7 +121,10 @@ def get_wounds(attacker, defender, weapon, hits):
     elif strength * 2 <= toughness:
         wound_check = 6
     for i in range(hits):
-        if d6() >= wound_check:
+        roll = d6()
+        if rr_wounds and roll == 1:
+            roll = d6()
+        if roll >= wound_check:
             wounds += 1
     return wounds
 
@@ -141,7 +158,9 @@ attacker_weapon = bolt_rifle
 failed_save_num = 0
 
 for model in attacker_datasheet.models:
+
     for model_num in range(model.quantity):
+        attacker_weapon = model.weapons[0]
         hit_num = get_hits(model, attacker_weapon)
         wound_num = get_wounds(model, defender_datasheet, attacker_weapon, hit_num)
         failed_save_num += get_saves(defender_datasheet, attacker_weapon, wound_num)
@@ -153,7 +172,4 @@ else:
 
 # TODO:
 #  1. add shooting w/ multiple weapons
-#  2. add reroll capabilities
-#  3. add more differing profiles
-#  4. add framework for gathering data
-#  5. Intercessor, Plague Marine and Guardsman have one more attribute than everyone else
+#  2. add framework for gathering data
