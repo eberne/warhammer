@@ -1,0 +1,5 @@
+rr Hits	rr Wounds	Mean	Std Dev
+TRUE	FALSE	    4.28	1.58
+TRUE	TRUE	    5.04	1.60
+FALSE	TRUE	    4.36	1.57
+FALSE	FALSE	    3.70	1.53

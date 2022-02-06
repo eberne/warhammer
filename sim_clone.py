@@ -4,9 +4,11 @@ from unit import Unit
 from weapon import Weapon
 from model import Model
 import statistics
+import numpy as np
+import matplotlib.pyplot as plt
 
-rr_hits = True
-rr_wounds = True
+rr_hits = False
+rr_wounds = False
 
 def d6():
     return random.randint(1, 6)
@@ -28,8 +30,6 @@ storm_bolter = Weapon("Storm Bolter", "Rapid Fire", 2, 4, 0, 1)
 heavy_bolter = Weapon("Heavy Bolter", "Heavy", 3, 5, 1, 2)
 battle_cannon = Weapon("Battle Cannon", "Heavy", "d6", 8, 2, "d3")
 ccw = Weapon("Close Combat Weapon", 'Melee', "User", "User", 0, 1)
-
-# print(plague_knife.__dict__)
 
 # Models
 # 'name', [weapons], wounds (health), strength, toughness, ballistic skill, weapon skill, attacks, save, quantity
@@ -144,23 +144,41 @@ def get_damage(defender, weapon, f_saves):
 
     return deaths, damage
 
-attacker_unit = intercessors
-defender_unit = infantry_squad
-attacker_weapon = bolt_rifle
-failed_save_num = 0
+def sim_output(attacker_input, defender_input, weapon_input, fail):
+    attacker_unit = attacker_input
+    defender_unit = defender_input
+    attacker_weapon = weapon_input
+    failed_save_num = fail
 
-for model in attacker_unit.models:
+    for model in attacker_unit.models:
 
-    for model_num in range(model.quantity):
-        attacker_weapon = model.weapons[0]
-        hit_num = get_hits(model, attacker_weapon)
-        wound_num = get_wounds(model, defender_unit, attacker_weapon, hit_num)
-        failed_save_num += get_saves(defender_unit, attacker_weapon, wound_num)
-dead_models = get_damage(defender_unit, attacker_weapon, failed_save_num)
-if dead_models[1] == 0:
-    print(f"deaths: {dead_models[0]}")
-else:
-    print(f"deaths: {dead_models[0]}\nwounds remaining: {defender_unit.models[0].w - dead_models[1]}")
+        for model_num in range(model.quantity):
+            attacker_weapon = model.weapons[0]
+            hit_num = get_hits(model, attacker_weapon)
+            wound_num = get_wounds(model, defender_unit, attacker_weapon, hit_num)
+            failed_save_num += get_saves(defender_unit, attacker_weapon, wound_num)
+    dead_models = get_damage(defender_unit, attacker_weapon, failed_save_num)
+    if dead_models[1] == 0:
+        return dead_models[0]
+    else:
+        return dead_models[1]
+
+results = []
+for k in range(10000):
+    results.append(sim_output(intercessors, infantry_squad, bolt_rifle, 0))
+sd = 'Standard Deviation: {:.2f}'.format(statistics.stdev(results))
+mean = '                      Mean: {:.2f}'.format(statistics.mean(results))
+result_text = mean + '\n' + sd
+result_text = result_text + '\n\n' + '      Reroll Hits: ' + str(rr_hits)
+result_text = result_text + '\n' + 'Reroll Wounds: ' + str(rr_wounds)
+fig, axis = plt.subplots(figsize=(10, 10))
+axis.set_title('Running 10,000 Cases')
+axis.set_xlabel('Number Killed')
+axis.set_ylabel('Case Frequency')
+axis.hist(np.array(results), bins=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], rwidth=0.8)
+plt.text(7, 2300, result_text)
+plt.ylim(0,2750)
+plt.show()
 
 # TODO:
 #  1. add shooting w/ multiple weapons

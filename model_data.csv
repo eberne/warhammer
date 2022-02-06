@@ -1,9 +1,8 @@
-Name,[Weapons],Wounds,Strength,Toughness,Ballistic Skill,Weapon Skill,Attacks,Save,Quantity
-"Plague Marine", [bolt_gun plague_knife], 2, 4, 5, 3, 3, 2, 3, 5
-"Plague Marine Champion", [bolt_gun plague_knife power_sword], 2, 4, 5, 3, 3, 3, 3
-"Plague Marine Gunner", [blight_launcher plague_knife], 2, 4, 5, 3, 3, 2, 3
-"Intercessor", [bolt_rifle], 2, 4, 4, 3, 3, 2, 3, 4
-"Intercessor Sergeant", [bolt_rifle power_sword], 2, 4, 4, 3, 3, 3, 3
-"Guardsman", [lasgun], 1, 3, 3, 4, 4, 1, 5, 9
-"Guardsman Sergeant", [lasgun chainsword], 1, 3, 3, 4, 4, 2, 5
-
+index,[Weapons],Wounds,Strength,Toughness,Ballistic Skill,Weapon Skill,Attacks,Save,Quantity
+Plague Marine,[bolt_gun plague_knife],2,4,5,3,3,2,3,5
+Plague Marine Champion,[bolt_gun plague_knife power_sword],2,4,5,3,3,3,3,1
+Plague Marine Gunner,[blight_launcher plague_knife],2,4,5,3,3,2,3,1
+Intercessor,[bolt_rifle],2,4,4,3,3,2,3,4
+Intercessor Sergeant,[bolt_rifle power_sword],2,4,4,3,3,3,3,1
+Guardsman,[lasgun],1,3,3,4,4,1,5,9
+Guardsman Sergeant,[lasgun chainsword],1,3,3,4,4,2,5,1

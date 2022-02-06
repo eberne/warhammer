@@ -1,9 +1,9 @@
-Name,Weapon_Type,Attacks,Strength,Armor_Penetration,Damage,plaque,extra_attacks,unwieldy
-"Bolt Gun", "Rapid Fire", 1, 4, 0, 1
-"Blight Launcher", "Assault", 2, 7, 2, 2, True
-"Bolt Rifle", "Rapid Fire", 1, 4, 1, 1
-"Plague Knife", "Melee", "User", "User", 1, 1, True
-"Power Sword", "Melee", "User", "+1", 1, 1
-"Lasgun", "Rapid Fire", 1, 3, 0, 1
-"Chainsword", "Melee", "User", "User", 0, 1, extra_attacks=1
-"Lascannon", "Heavy", 1, 9, 3, "d6"
+index,Name,Weapon_Type,Attacks,Strength,Armor_Penetration,Damage,plague,extra_attacks,unwieldy
+bolt_gun,"Bolt Gun", "Rapid Fire", 1, 4, 0, 1
+blight_launcher,"Blight Launcher", "Assault", 2, 7, 2, 2, True
+bolt_rifle,"Bolt Rifle", "Rapid Fire", 1, 4, 1, 1
+plague_knife,"Plague Knife", "Melee", "User", "User", 1, 1, True
+power_sword,"Power Sword", "Melee", "User", "+1", 1, 1
+lasgun,"Lasgun", "Rapid Fire", 1, 3, 0, 1
+chainsword,"Chainsword", "Melee", "User", "User", 0, 1, extra_attacks=1
+lasconnon,"Lascannon", "Heavy", 1, 9, 3, "d6"
